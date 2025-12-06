@@ -2,20 +2,25 @@ package com.example.server.services;
 
 import org.springframework.stereotype.Service;
 
+import com.example.server.entities.UserEntity;
+import com.example.server.repositories.UserRepository;
+
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+  UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-    
-    public User criar(User user) {
-        // Validações de negócio aqui
-        return userRepository.save(user);
-    }
+  // todo: definir os dtos? 
+  public UserEntity create(CreateUserDto dto) {
+    UserEntity user = new UserEntity();
+
+    /* ... */
+    userRepository.save(user);
+
+    return user;
+  }
+ 
 }

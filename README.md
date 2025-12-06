@@ -1,0 +1,3 @@
+requirements:
+
+- java 17
