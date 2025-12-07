@@ -33,17 +33,12 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-    System.out.println("CUZINHOOOO 11111");
     var usernamePassword = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
 
-    System.out.println("CUZINHOOOO 22222");
     var auth = this.authenticationManager.authenticate(usernamePassword);
 
-
-    System.out.println("CUZINHOOOO 222255552");
     var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
 
-    System.out.println("CUZINHOOOO 33333");
     return ResponseEntity.ok(token);
   }
 
@@ -60,6 +55,7 @@ public class AuthController {
       .password(hashPassword)
       .fullName(data.fullName())
       .role(RoleEnum.USER)
+      // url aleatório por enquanto
       .avatarUrl("https://www.oficinadanet.com.br/imagens/post/65750/justica-decreta-falencia-da-oi-entenda-o-que-acontece-com-a-operadora.jpg")
       .build();
 
