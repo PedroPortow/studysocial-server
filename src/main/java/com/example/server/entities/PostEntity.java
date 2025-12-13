@@ -7,16 +7,25 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@Entity
+@Getter
+@Setter
+@Builder 
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity(name = "posts")
 @Table(name = "posts")
 public class PostEntity {
 
@@ -24,9 +33,9 @@ public class PostEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY) // carrega o usuário só quand necessário
   @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  private UserEntity user; // spring boot converte automaticamente pra um objeto user
 
   @Column(name = "title", nullable = false, length = 180)
   private String title;
@@ -37,8 +46,9 @@ public class PostEntity {
   @Column(name = "media_url", nullable = true)
   private String mediaUrl;
 
+  @Builder.Default // se usar @Builder
   @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreationTimestamp 
   @Column(name = "created_at", nullable = false, updatable = false)

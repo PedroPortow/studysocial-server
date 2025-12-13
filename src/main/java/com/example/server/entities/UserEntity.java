@@ -64,6 +64,8 @@ public class UserEntity implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /// coisas do spring-security
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
       // traduz o RoleEnum para o padrão do spring security
@@ -75,7 +77,6 @@ public class UserEntity implements UserDetails {
     }
 
 
-    // negócios do spring security
     @Override
     public String getUsername() {
       return email; 
@@ -86,7 +87,6 @@ public class UserEntity implements UserDetails {
       return password; 
     }
 
-    // negócios do spring security
     @Override
     public boolean isAccountNonExpired() { return true; }
     @Override

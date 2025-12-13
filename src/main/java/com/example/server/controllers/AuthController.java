@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.server.dtos.LoginDto;
 import com.example.server.dtos.RegisterDto;
+import com.example.server.dtos.responses.ApiResponse;
+import com.example.server.dtos.responses.LoginResponseDto;
+import com.example.server.dtos.responses.UserResponseDto;
 import com.example.server.entities.UserEntity;
 import com.example.server.enums.RoleEnum;
 import com.example.server.repositories.UserRepository;
@@ -32,20 +35,24 @@ public class AuthController {
   private UserRepository repository;
 
   @PostMapping("/login")
-  public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
+  public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody @Valid LoginDto loginDto) {
     var usernamePassword = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
 
     var auth = this.authenticationManager.authenticate(usernamePassword);
 
-    var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
+    UserEntity user = (UserEntity) auth.getPrincipal();
+    var token = tokenService.generateToken(user);
 
-    return ResponseEntity.ok(token);
+    var loginData = new LoginResponseDto(token, UserResponseDto.fromEntity(user));
+
+    return ResponseEntity.ok(ApiResponse.success(loginData));
   }
 
   @PostMapping("/register")
-  public ResponseEntity<Void> register(@RequestBody @Valid RegisterDto data) {
-    if (this.repository.findById(data.email()).isPresent()){
-      return ResponseEntity.badRequest().build();
+  public ResponseEntity<ApiResponse<UserResponseDto>> register(@RequestBody @Valid RegisterDto data) {
+    if (this.repository.findById(data.email()).isPresent()) {
+      return ResponseEntity.badRequest()
+        .body(ApiResponse.error(400, "Email já cadastrado"));
     }
 
     String hashPassword = new BCryptPasswordEncoder().encode(data.password());
@@ -61,6 +68,6 @@ public class AuthController {
 
     this.repository.save(newUser);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(ApiResponse.success(UserResponseDto.fromEntity(newUser)));
   }
 }

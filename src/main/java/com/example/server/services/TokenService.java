@@ -42,7 +42,7 @@ public class TokenService {
         .verify(token)
         .getSubject(); // isso aqui vai retornar o email do usuário na prática, que infelizmente é a primary key 
     } catch (JWTVerificationException exception) {
-      return "deu ruim? expirou o token ou é inválido";
+      return ""; 
     }
   }
 }
