@@ -46,9 +46,8 @@ public class PostEntity {
   @Column(name = "media_url", nullable = true)
   private String mediaUrl;
 
-  @Builder.Default // se usar @Builder
-  @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  private Boolean isDeleted = false;
+  @Column(name = "deleted_at", nullable = true)
+  private LocalDateTime deletedAt;
 
   @CreationTimestamp 
   @Column(name = "created_at", nullable = false, updatable = false)

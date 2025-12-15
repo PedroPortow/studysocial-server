@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.server.dtos.LoginDto;
 import com.example.server.dtos.RegisterDto;
-import com.example.server.dtos.responses.ApiResponse;
 import com.example.server.dtos.responses.LoginResponseDto;
 import com.example.server.dtos.responses.UserResponseDto;
 import com.example.server.entities.UserEntity;
@@ -38,7 +37,7 @@ public class AuthController {
   private UserRepository repository;
 
   @PostMapping("/login")
-  public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody @Valid LoginDto loginDto) {
+  public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
     var usernamePassword = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
 
     var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -48,14 +47,14 @@ public class AuthController {
 
     var loginData = new LoginResponseDto(token, UserResponseDto.fromEntity(user));
 
-    return ResponseEntity.ok(ApiResponse.success(loginData));
+    return ResponseEntity.ok(loginData);
   }
 
   @PostMapping("/register")
-  public ResponseEntity<ApiResponse<UserResponseDto>> register(@RequestBody @Valid RegisterDto data) {
+  public ResponseEntity<UserResponseDto> register(@RequestBody @Valid RegisterDto data) {
     if (this.repository.findById(data.email()).isPresent()) {
       return ResponseEntity.badRequest()
-        .body(ApiResponse.error(400, "Email já cadastrado"));
+        .body(null);
     }
 
     String hashPassword = new BCryptPasswordEncoder().encode(data.password());
@@ -71,18 +70,18 @@ public class AuthController {
 
     this.repository.save(newUser);
 
-    return ResponseEntity.ok(ApiResponse.success(UserResponseDto.fromEntity(newUser)));
+    return ResponseEntity.ok(UserResponseDto.fromEntity(newUser));
   }
 
 
   @GetMapping("/me")
-  public ResponseEntity<ApiResponse<UserResponseDto>> me() {
+  public ResponseEntity<UserResponseDto> me() {
     var user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (!(user instanceof UserEntity)) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(401, "Usuário não autenticado"));
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
-    return ResponseEntity.ok(ApiResponse.success(UserResponseDto.fromEntity((UserEntity) user)));
+    return ResponseEntity.ok(UserResponseDto.fromEntity((UserEntity) user));
   }
 }
