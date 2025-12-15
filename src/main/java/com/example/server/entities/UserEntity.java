@@ -33,66 +33,66 @@ import lombok.Setter;
 @Table(name = "users") 
 public class UserEntity implements UserDetails {
 
-    @Id
-    @Column(nullable = false, unique = true)
-    private String email;
+  @Id
+  @Column(nullable = false, unique = true)
+  private String email;
 
-    @Column(nullable = false)
-    private String password; // mudar pra auth
+  @Column(nullable = false)
+  private String password; // mudar pra auth
 
-    @Column(name = "full_name", nullable = false) 
-    private String fullName;
+  @Column(name = "full_name", nullable = false) 
+  private String fullName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "ENUM('ADMIN', 'USER') DEFAULT 'USER'") // column definition seta user como default
-    private RoleEnum role;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false, columnDefinition = "ENUM('ADMIN', 'USER') DEFAULT 'USER'") // column definition seta user como default
+  private RoleEnum role;
 
-    @Column(name = "avatar_url", nullable = true)
-    private String avatarUrl;
+  @Column(name = "avatar_url", nullable = true)
+  private String avatarUrl;
 
-    // @ManyToOne
-    // @JoinColumn(name = "course_id", nullable = false)
-    // private CourseEntity course;
-    // @Column(name = "course_id", nullable = false)
-    // private Long courseId;
+  // @ManyToOne
+  // @JoinColumn(name = "course_id", nullable = false)
+  // private CourseEntity course;
+  // @Column(name = "course_id", nullable = false)
+  // private Long courseId;
 
-    @CreationTimestamp // gera o created_at automaticamente
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+  @CreationTimestamp // gera o created_at automaticamente
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-    @UpdateTimestamp // gera o updated_at automaticamente
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+  @UpdateTimestamp // gera o updated_at automaticamente
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
-    /// coisas do spring-security
+  /// coisas do spring-security
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-      // traduz o RoleEnum para o padrão do spring security
-      if (this.role == RoleEnum.ADMIN) {
-        return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-      } else {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-      }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    // traduz o RoleEnum para o padrão do spring security
+    if (this.role == RoleEnum.ADMIN) {
+      return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+    } else {
+      return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+  }
 
 
-    @Override
-    public String getUsername() {
-      return email; 
-    }
+  @Override
+  public String getUsername() {
+    return email; 
+  }
 
-    @Override
-    public String getPassword() {
-      return password; 
-    }
+  @Override
+  public String getPassword() {
+    return password; 
+  }
 
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return true; }
+  @Override
+  public boolean isAccountNonExpired() { return true; }
+  @Override
+  public boolean isAccountNonLocked() { return true; }
+  @Override
+  public boolean isCredentialsNonExpired() { return true; }
+  @Override
+  public boolean isEnabled() { return true; }
 }
