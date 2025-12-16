@@ -26,16 +26,20 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder // cria objeto sem precisar ficar chamando set toda hora
+@Builder // cria objeto sem precisar ficar a chamar ‘set’ toda hora
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "users")
 @Table(name = "users") 
 public class UserEntity implements UserDetails {
 
+  /* talvez seja melhor utilizar uuid no lugar do email, deixa o email apenas como unique
+   long seria "simples" demais para segurança e ‘string’ é complexo demais (futuro)
+   além de que e-mail (mesmo institutional) pode ser mudado se pedido ou troca de sobrenome, etc.*/
   @Id
   @Column(nullable = false, unique = true)
   private String email;
+
 
   @Column(nullable = false)
   private String password; // mudar pra auth
