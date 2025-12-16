@@ -2,6 +2,8 @@ package com.example.server.services;
 
 import java.util.List;
 
+import com.example.server.dtos.requests.UpdateSocietyDto;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.server.dtos.requests.CreateSocietyDto;
@@ -55,6 +57,26 @@ public class SocietyService {
 
     public SocietyEntity getGroupById(Long id) {
         return getGroupOrThrow(id);
+    }
+
+    @Transactional
+    public SocietyEntity updateGroup(Long societyId, UpdateSocietyDto dto, UserEntity currentUser) {
+        SocietyEntity society = societyRepository.findById(societyId)
+                .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+
+        if (!society.getOwner().getEmail().equals(currentUser.getEmail())) {
+            throw new RuntimeException("Permissão negada. Apenas o dono pode editar o grupo.");
+        }
+
+        if (dto.name() != null && !dto.name().isBlank()) {
+            society.setName(dto.name());
+        }
+
+        if (dto.description() != null) {
+            society.setDescription(dto.description());
+        }
+
+        return societyRepository.save(society);
     }
 
     private SocietyEntity getGroupOrThrow(Long id) {
