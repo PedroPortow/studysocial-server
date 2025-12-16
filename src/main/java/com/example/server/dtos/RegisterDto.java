@@ -24,8 +24,12 @@ public record RegisterDto(
   @Size(min = 6, message = "senha deve ter pelo menos 6 caracteres")
   String password,
 
+  @NotBlank(message = "curso é obrigatório")
+  String course,
+
   @Nullable
   @URL(message = "formato de url inválido")
+  @JsonProperty("avatar_url")
   String avatarUrl,
     
   @Nullable

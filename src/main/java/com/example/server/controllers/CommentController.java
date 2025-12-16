@@ -48,6 +48,12 @@ public class CommentController {
     return ResponseEntity.ok(comments);
   }
 
+  @GetMapping("/count")
+  public ResponseEntity<Long> countByPost(@PathVariable Long postId) {
+    long count = commentService.countByPost(postId);
+    return ResponseEntity.ok(count);
+  }
+
   @PutMapping("/{id}")
   public ResponseEntity<CommentResponseDto> update(
       @PathVariable Long postId,

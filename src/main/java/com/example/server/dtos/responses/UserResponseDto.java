@@ -13,14 +13,17 @@ public record UserResponseDto(
   @JsonProperty("avatar_url")
   String avatarUrl,
 
-  RoleEnum role
+  RoleEnum role,
+
+  CourseResponseDto course
 ) {
   public static UserResponseDto fromEntity(UserEntity user) {
     return new UserResponseDto(
       user.getEmail(),
       user.getFullName(),
       user.getAvatarUrl(),
-      user.getRole()
+      user.getRole(),
+      CourseResponseDto.fromEntity(user.getCourse())
     );
   }
 }

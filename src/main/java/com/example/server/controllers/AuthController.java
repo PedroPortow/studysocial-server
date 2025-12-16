@@ -17,8 +17,10 @@ import com.example.server.dtos.LoginDto;
 import com.example.server.dtos.RegisterDto;
 import com.example.server.dtos.responses.LoginResponseDto;
 import com.example.server.dtos.responses.UserResponseDto;
+import com.example.server.entities.CourseEntity;
 import com.example.server.entities.UserEntity;
 import com.example.server.enums.RoleEnum;
+import com.example.server.repositories.CourseRepository;
 import com.example.server.repositories.UserRepository;
 import com.example.server.services.TokenService;
 
@@ -35,6 +37,9 @@ public class AuthController {
 
   @Autowired
   private UserRepository repository;
+
+  @Autowired
+  private CourseRepository courseRepository;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
@@ -53,8 +58,14 @@ public class AuthController {
   @PostMapping("/register")
   public ResponseEntity<UserResponseDto> register(@RequestBody @Valid RegisterDto data) {
     if (this.repository.findById(data.email()).isPresent()) {
-      return ResponseEntity.badRequest()
-        .body(null);
+      return ResponseEntity.badRequest().body(null);
+    }
+
+    CourseEntity course = this.courseRepository.findById(data.course())
+        .orElse(null);
+
+    if (course == null) {
+      return ResponseEntity.badRequest().body(null);
     }
 
     String hashPassword = new BCryptPasswordEncoder().encode(data.password());
@@ -64,8 +75,8 @@ public class AuthController {
       .password(hashPassword)
       .fullName(data.fullName())
       .role(RoleEnum.USER)
-      // url aleatório por enquanto
-      .avatarUrl("https://www.oficinadanet.com.br/imagens/post/65750/justica-decreta-falencia-da-oi-entenda-o-que-acontece-com-a-operadora.jpg")
+      .course(course)
+      .avatarUrl(data.avatarUrl())
       .build();
 
     this.repository.save(newUser);

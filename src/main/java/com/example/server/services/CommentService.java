@@ -26,9 +26,6 @@ public class CommentService {
     this.postRepository = postRepository;
   }
 
-  // TODO: Achar todos os filhos, dos filhos, dos filhos, dos filhos
-  // dos comentários principais. Só vai aparecer quando expandir um comentário principal no front
-
   public CommentResponseDto create(Long postId, CreateCommentDto dto, UserEntity user) {
     PostEntity post = postRepository.findByIdAndDeletedAtIsNull(postId)
         .orElseThrow(() -> new RuntimeException("post não encontrado"));
@@ -58,11 +55,21 @@ public class CommentService {
     List<CommentEntity> mainComments = commentRepository
         .findByPostAndDeletedAtIsNullAndParentIsNullOrderByCreatedAtAsc(post);
 
-    List<CommentResponseDto> commentDtos = mainComments.stream()
-        .map(CommentResponseDto::fromEntity)
+    return mainComments.stream()
+        .map(this::buildCommentTree)
+        .collect(Collectors.toList());
+  }
+
+  // método recursivo pra caçar toda a árvore de comentários, foda-se o desempenho hehe
+  private CommentResponseDto buildCommentTree(CommentEntity comment) {
+    List<CommentEntity> replies = commentRepository
+        .findByParentAndDeletedAtIsNullOrderByCreatedAtAsc(comment);
+
+    List<CommentResponseDto> replyDtos = replies.stream()
+        .map(this::buildCommentTree) 
         .collect(Collectors.toList());
 
-    return commentDtos;
+    return CommentResponseDto.fromEntity(comment, replyDtos);
   }
 
   public CommentResponseDto update(Long id, UpdateCommentDto dto, UserEntity user) {
