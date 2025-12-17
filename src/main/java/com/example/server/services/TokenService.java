@@ -20,27 +20,27 @@ public class TokenService {
 
   public String generateToken(UserEntity user) {
     try {
-      Algorithm algorithm = Algorithm.HMAC256("secret");
+      Algorithm algorithm = Algorithm.HMAC256(secret);
 
       return JWT.create()
         .withIssuer("server-api")
         .withSubject(user.getEmail())
-        .withExpiresAt(LocalDateTime.now().plusHours(7).toInstant(ZoneOffset.of("-03:00"))) // expira em 7 horas
+        .withExpiresAt(LocalDateTime.now().plusHours(7).toInstant(ZoneOffset.of("-03:00")))
         .sign(algorithm);
     } catch (JWTCreationException exception) {
       throw new RuntimeException("deu ruim na geração do token", exception);
     }
   }
 
-  public String validateToken(String token) { // retorna o email do usuário
+  public String validateToken(String token) {
     try {
-      Algorithm algorithm = Algorithm.HMAC256("secret");
+      Algorithm algorithm = Algorithm.HMAC256(secret);
 
       return JWT.require(algorithm)
         .withIssuer("server-api")
         .build()
         .verify(token)
-        .getSubject(); // isso aqui vai retornar o email do usuário na prática, que infelizmente é a primary key 
+        .getSubject();
     } catch (JWTVerificationException exception) {
       return ""; 
     }

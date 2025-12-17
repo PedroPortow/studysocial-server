@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.server.dtos.requests.CreatePostDto;
 import com.example.server.dtos.requests.UpdatePostDto;
 import com.example.server.entities.PostEntity;
 import com.example.server.entities.UserEntity;
@@ -32,11 +31,11 @@ public class PostService {
         return postRepository.findByUserAndDeletedAtIsNullOrderByCreatedAtDesc(user);
     }
 
-    public PostEntity create(CreatePostDto dto, UserEntity user) {
+    public PostEntity create(String title, String content, String mediaUrl, UserEntity user) {
         PostEntity post = PostEntity.builder()
-            .title(dto.title())
-            .content(dto.content())
-            .mediaUrl(dto.mediaUrl())
+            .title(title)
+            .content(content)
+            .mediaUrl(mediaUrl)
             .user(user)
             .build();
 
