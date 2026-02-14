@@ -18,7 +18,10 @@ public class SocietyService {
     private final SocietyRepository societyRepository;
     private final UserRepository userRepository;
 
-    public SocietyService(SocietyRepository societyRepository, UserRepository userRepository) { this.societyRepository = societyRepository; this.userRepository = userRepository; }
+    public SocietyService(SocietyRepository societyRepository, UserRepository userRepository) {
+        this.societyRepository = societyRepository;
+        this.userRepository = userRepository;
+    }
 
     public SocietyEntity createGroup(CreateSocietyDto dto, UserEntity owner) {
         if (societyRepository.findByName(dto.name()).isPresent()) {

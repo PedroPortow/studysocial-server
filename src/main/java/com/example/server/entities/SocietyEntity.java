@@ -1,7 +1,9 @@
 package com.example.server.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +56,10 @@ public class SocietyEntity {
     @JoinTable(name = "society_members", joinColumns = @JoinColumn(name = "society_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
     private Set<UserEntity> members = new HashSet<>();
+
+    @OneToMany(mappedBy = "society", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<PostEntity> posts = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
