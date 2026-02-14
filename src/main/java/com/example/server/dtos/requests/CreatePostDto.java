@@ -13,5 +13,8 @@ public record CreatePostDto(
     String content,
 
     @JsonProperty("media_url")
-    String mediaUrl
+    String mediaUrl,
+
+    @JsonProperty("society_id")
+    Long societyId
 ) {}

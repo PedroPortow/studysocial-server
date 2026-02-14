@@ -38,8 +38,8 @@ public class PostController {
   }
 
   @GetMapping
-  public ResponseEntity<List<PostResponseDto>> findAll() {
-    List<PostEntity> posts = postService.findAll();
+  public ResponseEntity<List<PostResponseDto>> findAll(@AuthenticationPrincipal UserEntity user) {
+    List<PostEntity> posts = postService.findByGeneralPostOrSocietyMembership(user);
     List<PostResponseDto> response = posts.stream()
         .map(PostResponseDto::fromEntity)
         .toList();
@@ -63,11 +63,22 @@ public class PostController {
       return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/society/{societyId}")
+    public ResponseEntity<List<PostResponseDto>> findBySociety(@PathVariable Long societyId) {
+      List<PostEntity> posts = postService.findBySociety(societyId);
+      List<PostResponseDto> response = posts.stream()
+          .map(PostResponseDto::fromEntity)
+          .toList();
+
+      return ResponseEntity.ok(response);
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponseDto> create(
       @RequestParam("title") String title,
       @RequestParam(value = "content", required = false) String content,
       @RequestParam(value = "media", required = false) MultipartFile media,
+      @RequestParam(value = "society_id", required = false) Long societyId,
       @AuthenticationPrincipal UserEntity user
     ) {
       String mediaUrl = null;
@@ -75,7 +86,7 @@ public class PostController {
           mediaUrl = s3Service.uploadFile(media, "posts");
       }
 
-      PostEntity post = postService.create(title, content, mediaUrl, user);
+      PostEntity post = postService.create(title, content, mediaUrl, user, societyId);
       return ResponseEntity.status(HttpStatus.CREATED).body(PostResponseDto.fromEntity(post));
     }
 

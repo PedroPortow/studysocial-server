@@ -31,21 +31,46 @@ public class SocietyService {
                 .owner(owner)
                 .build();
 
-        group.getMembers().add(owner); // O dono é automaticamente um membro
+        group.getMembers().add(owner);
 
         return societyRepository.save(group);
     }
 
+    @Transactional
     public void joinGroup(Long groupId, UserEntity user) {
         SocietyEntity group = getGroupOrThrow(groupId);
+
+        boolean isAlreadyMember = group.getMembers().stream()
+                .anyMatch(member -> member.getEmail().equals(user.getEmail()));
+
+        if (isAlreadyMember) {
+            throw new RuntimeException("Você já é membro deste grupo");
+        }
+
         group.getMembers().add(user);
         societyRepository.save(group);
     }
 
+    @Transactional
     public void leaveGroup(Long groupId, UserEntity user) {
         SocietyEntity group = getGroupOrThrow(groupId);
-        group.getMembers().remove(user);
-        societyRepository.save(group);
+
+        if (group.getOwner().getEmail().equals(user.getEmail())) {
+            throw new RuntimeException("O dono do grupo não pode sair do próprio grupo");
+        }
+
+        boolean isMember = group.getMembers().stream()
+                .anyMatch(member -> member.getEmail().equals(user.getEmail()));
+
+        if (!isMember) {
+            throw new RuntimeException("Você não é membro deste grupo");
+        }
+
+        boolean removed = group.getMembers().removeIf(member -> member.getEmail().equals(user.getEmail()));
+
+        if (removed) {
+            societyRepository.save(group);
+        }
     }
 
     public List<SocietyEntity> getAllGroups() {
@@ -85,7 +110,6 @@ public class SocietyService {
         SocietyEntity society = societyRepository.findById(societyId)
                 .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
 
-        // Verifica se o usuário é o dono do grupo OU se é admin
         boolean isOwner = society.getOwner().getEmail().equals(currentUser.getEmail());
         boolean isAdmin = currentUser.getRole() == RoleEnum.ADMIN;
 

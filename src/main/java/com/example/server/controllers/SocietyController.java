@@ -41,7 +41,7 @@ public class SocietyController {
         SocietyEntity group = societyService.createGroup(dto, user);
         // Retorna 201 Created com o DTO
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(SocietyResponseDto.fromEntity(group));
+                .body(SocietyResponseDto.fromEntity(group, user));
     }
 
     @PutMapping("/{id}")
@@ -53,7 +53,7 @@ public class SocietyController {
         // Passamos o user para o service validar se ele é o dono
         SocietyEntity updatedGroup = societyService.updateGroup(id, dto, user);
 
-        return ResponseEntity.ok(SocietyResponseDto.fromEntity(updatedGroup));
+        return ResponseEntity.ok(SocietyResponseDto.fromEntity(updatedGroup, user));
     }
 
     @DeleteMapping("/{id}")
@@ -66,46 +66,55 @@ public class SocietyController {
     }
 
     @PostMapping("/{id}/join")
-    public ResponseEntity<Void> joinGroup(
+    public ResponseEntity<SocietyResponseDto> joinGroup(
             @PathVariable Long id,
             @AuthenticationPrincipal UserEntity user) {
         societyService.joinGroup(id, user);
-        return ResponseEntity.ok().build();
+        SocietyEntity group = societyService.getGroupById(id);
+        return ResponseEntity.ok(SocietyResponseDto.fromEntity(group, user));
     }
 
     @PostMapping("/{id}/leave")
-    public ResponseEntity<Void> leaveGroup(
+    public ResponseEntity<SocietyResponseDto> leaveGroup(
             @PathVariable Long id,
             @AuthenticationPrincipal UserEntity user) {
         societyService.leaveGroup(id, user);
-        return ResponseEntity.ok().build();
+        SocietyEntity group = societyService.getGroupById(id);
+        return ResponseEntity.ok(SocietyResponseDto.fromEntity(group, user));
     }
 
     @GetMapping
-    public ResponseEntity<List<SocietyResponseDto>> getAllGroups() {
+    public ResponseEntity<List<SocietyResponseDto>> getAllGroups(
+            @AuthenticationPrincipal UserEntity user
+    ) {
         List<SocietyEntity> groups = societyService.getAllGroups();
 
         List<SocietyResponseDto> response = groups.stream()
-                .map(SocietyResponseDto::fromEntity)
+                .map(group -> SocietyResponseDto.fromEntity(group, user))
                 .toList();
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<SocietyResponseDto>> getUserGroups(@AuthenticationPrincipal UserEntity user) {
+    public ResponseEntity<List<SocietyResponseDto>> getUserGroups(
+            @AuthenticationPrincipal UserEntity user
+    ) {
         List<SocietyEntity> groups = societyService.getUserGroups(user);
 
         List<SocietyResponseDto> response = groups.stream()
-                .map(SocietyResponseDto::fromEntity)
+                .map(group -> SocietyResponseDto.fromEntity(group, user))
                 .toList();
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SocietyResponseDto> getGroup(@PathVariable Long id) {
+    public ResponseEntity<SocietyResponseDto> getGroup(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserEntity user
+    ) {
         SocietyEntity group = societyService.getGroupById(id);
-        return ResponseEntity.ok(SocietyResponseDto.fromEntity(group));
+        return ResponseEntity.ok(SocietyResponseDto.fromEntity(group, user));
     }
 }

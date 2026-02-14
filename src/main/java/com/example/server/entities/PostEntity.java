@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "posts")
@@ -37,10 +37,14 @@ public class PostEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user; // spring boot converte automaticamente pra um objeto user
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "society_id", nullable = true)
+  private SocietyEntity society;
+
   @Column(name = "title", nullable = false, length = 180)
   private String title;
 
-  @Column(columnDefinition = "TEXT") 
+  @Column(columnDefinition = "TEXT")
   private String content;
 
   @Column(name = "media_url", nullable = true)
@@ -49,7 +53,7 @@ public class PostEntity {
   @Column(name = "deleted_at", nullable = true)
   private LocalDateTime deletedAt;
 
-  @CreationTimestamp 
+  @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

@@ -7,20 +7,28 @@ import org.springframework.stereotype.Service;
 
 import com.example.server.dtos.requests.UpdatePostDto;
 import com.example.server.entities.PostEntity;
+import com.example.server.entities.SocietyEntity;
 import com.example.server.entities.UserEntity;
 import com.example.server.enums.RoleEnum;
 import com.example.server.repositories.PostRepository;
+import com.example.server.repositories.SocietyRepository;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final SocietyRepository societyRepository;
 
-    PostService(PostRepository postRepository) {
+    PostService(PostRepository postRepository, SocietyRepository societyRepository) {
         this.postRepository = postRepository;
+        this.societyRepository = societyRepository;
     }
 
     public List<PostEntity> findAll() {
         return postRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
+    }
+
+    public List<PostEntity> findByGeneralPostOrSocietyMembership(UserEntity user) {
+        return postRepository.findByGeneralPostOrSocietyMembership(user);
     }
 
     public PostEntity findById(Long id) {
@@ -32,12 +40,33 @@ public class PostService {
         return postRepository.findByUserAndDeletedAtIsNullOrderByCreatedAtDesc(user);
     }
 
-    public PostEntity create(String title, String content, String mediaUrl, UserEntity user) {
+    public List<PostEntity> findBySociety(Long societyId) {
+        SocietyEntity society = societyRepository.findById(societyId)
+            .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+        return postRepository.findBySocietyAndDeletedAtIsNullOrderByCreatedAtDesc(society);
+    }
+
+    public PostEntity create(String title, String content, String mediaUrl, UserEntity user, Long societyId) {
+        SocietyEntity society = null;
+
+        if (societyId != null) {
+            society = societyRepository.findById(societyId)
+                .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+
+            boolean isMember = society.getMembers().stream()
+                .anyMatch(member -> member.getEmail().equals(user.getEmail()));
+
+            if (!isMember) {
+                throw new RuntimeException("Você precisa ser membro do grupo para postar nele");
+            }
+        }
+
         PostEntity post = PostEntity.builder()
             .title(title)
             .content(content)
             .mediaUrl(mediaUrl)
             .user(user)
+            .society(society)
             .build();
 
         return postRepository.save(post);
