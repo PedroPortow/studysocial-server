@@ -13,6 +13,9 @@ public record SocietyResponseDto(
         @JsonProperty("owner")
         UserResponseDto owner,
 
+        @JsonProperty("member_count")
+        Integer memberCount,
+
         @JsonProperty("created_at")
         LocalDateTime createdAt,
 
@@ -27,6 +30,7 @@ public record SocietyResponseDto(
                 entity.getName(),
                 entity.getDescription(),
                 UserResponseDto.fromEntity(entity.getOwner()),
+                entity.getMembers() != null ? entity.getMembers().size() : 0,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

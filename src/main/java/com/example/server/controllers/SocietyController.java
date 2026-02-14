@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.example.server.dtos.requests.CreateSocietyDto;
 import com.example.server.dtos.requests.UpdateSocietyDto;
@@ -53,6 +54,15 @@ public class SocietyController {
         SocietyEntity updatedGroup = societyService.updateGroup(id, dto, user);
 
         return ResponseEntity.ok(SocietyResponseDto.fromEntity(updatedGroup));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGroup(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        societyService.deleteGroup(id, user);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/join")

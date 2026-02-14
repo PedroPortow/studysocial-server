@@ -3,6 +3,7 @@ package com.example.server.services;
 import java.util.List;
 
 import com.example.server.dtos.requests.UpdateSocietyDto;
+import com.example.server.enums.RoleEnum;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +78,22 @@ public class SocietyService {
         }
 
         return societyRepository.save(society);
+    }
+
+    @Transactional
+    public void deleteGroup(Long societyId, UserEntity currentUser) {
+        SocietyEntity society = societyRepository.findById(societyId)
+                .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+
+        // Verifica se o usuário é o dono do grupo OU se é admin
+        boolean isOwner = society.getOwner().getEmail().equals(currentUser.getEmail());
+        boolean isAdmin = currentUser.getRole() == RoleEnum.ADMIN;
+
+        if (!isOwner && !isAdmin) {
+            throw new RuntimeException("Permissão negada. Apenas o dono ou administradores podem excluir o grupo.");
+        }
+
+        societyRepository.delete(society);
     }
 
     private SocietyEntity getGroupOrThrow(Long id) {

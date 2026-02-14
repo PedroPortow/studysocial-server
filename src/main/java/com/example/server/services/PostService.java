@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.server.dtos.requests.UpdatePostDto;
 import com.example.server.entities.PostEntity;
 import com.example.server.entities.UserEntity;
+import com.example.server.enums.RoleEnum;
 import com.example.server.repositories.PostRepository;
 
 @Service
@@ -46,7 +47,7 @@ public class PostService {
         PostEntity post = findById(id);
 
         // Verifica se o usuário é o dono do post
-        if (!post.getUser().getEmail().equals(user.getEmail())) {
+        if (!post.getUser().getEmail().equals(user.getEmail()) && user.getRole() != RoleEnum.ADMIN) {
             throw new RuntimeException("Você não tem permissão para editar este post");
         }
 
@@ -67,7 +68,7 @@ public class PostService {
         PostEntity post = findById(id);
 
         // Verifica se o usuário é o dono do post
-        if (!post.getUser().getEmail().equals(user.getEmail())) {
+        if (!post.getUser().getEmail().equals(user.getEmail()) && user.getRole() != RoleEnum.ADMIN) {
             throw new RuntimeException("Você não tem permissão para deletar este post");
         }
 
