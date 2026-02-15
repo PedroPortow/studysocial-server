@@ -18,4 +18,7 @@ public interface SocietyRepository extends JpaRepository<SocietyEntity, Long> {
     // Find groups where user is a member
     @Query("SELECT g FROM society g JOIN g.members m WHERE m = :user")
     List<SocietyEntity> findByMember(@Param("user") UserEntity user);
+
+    @Query("SELECT COUNT(g) > 0 FROM society g JOIN g.members m WHERE g.id = :societyId AND m.email = :userEmail")
+    boolean isMember(@Param("societyId") Long societyId, @Param("userEmail") String userEmail);
 }

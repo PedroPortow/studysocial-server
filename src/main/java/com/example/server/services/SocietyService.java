@@ -125,6 +125,6 @@ public class SocietyService {
 
     private SocietyEntity getGroupOrThrow(Long id) {
         return societyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+            .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
     }
 }

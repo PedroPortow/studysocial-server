@@ -52,11 +52,11 @@ public class PostService {
         if (societyId != null) {
             society = societyRepository.findById(societyId)
                 .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+                
+            boolean isMember = societyRepository.isMember(societyId, user.getEmail());
+            boolean isOwner = society.getOwner().getEmail().equals(user.getEmail());
 
-            boolean isMember = society.getMembers().stream()
-                .anyMatch(member -> member.getEmail().equals(user.getEmail()));
-
-            if (!isMember) {
+            if (!isMember && !isOwner) {
                 throw new RuntimeException("Você precisa ser membro do grupo para postar nele");
             }
         }

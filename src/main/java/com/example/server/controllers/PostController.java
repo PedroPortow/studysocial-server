@@ -38,39 +38,37 @@ public class PostController {
   }
 
   @GetMapping
-  public ResponseEntity<List<PostResponseDto>> findAll(@AuthenticationPrincipal UserEntity user) {
-    List<PostEntity> posts = postService.findByGeneralPostOrSocietyMembership(user);
-    List<PostResponseDto> response = posts.stream()
-        .map(PostResponseDto::fromEntity)
-        .toList();
+  public ResponseEntity<List<PostResponseDto>> findAll(
+      @RequestParam(value = "society_id", required = false) Long societyId,
+      @AuthenticationPrincipal UserEntity user
+  ) {
+    List<PostEntity> posts;
 
-    return ResponseEntity.ok(response);
+    if (societyId != null) {
+      posts = postService.findBySociety(societyId);
+    } else {
+      posts = postService.findByGeneralPostOrSocietyMembership(user);
+    }
+
+    return ResponseEntity.ok(posts.stream().map(PostResponseDto::fromEntity).toList());
   }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> findById(@PathVariable Long id) {
       PostEntity post = postService.findById(id);
+
       return ResponseEntity.ok(PostResponseDto.fromEntity(post));
     }
 
     @GetMapping("/me")
     public ResponseEntity<List<PostResponseDto>> findMyPosts(@AuthenticationPrincipal UserEntity user) {
-      List<PostEntity> posts = postService.findByUser(user);
-      List<PostResponseDto> response = posts.stream()
-          .map(PostResponseDto::fromEntity)
-          .toList();
+      List<PostResponseDto> posts = postService
+        .findByUser(user)
+        .stream()
+        .map(PostResponseDto::fromEntity)
+        .toList();
 
-      return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/society/{societyId}")
-    public ResponseEntity<List<PostResponseDto>> findBySociety(@PathVariable Long societyId) {
-      List<PostEntity> posts = postService.findBySociety(societyId);
-      List<PostResponseDto> response = posts.stream()
-          .map(PostResponseDto::fromEntity)
-          .toList();
-
-      return ResponseEntity.ok(response);
+      return ResponseEntity.ok(posts);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
