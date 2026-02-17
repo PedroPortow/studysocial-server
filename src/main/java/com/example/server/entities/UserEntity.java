@@ -33,7 +33,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "users")
-@Table(name = "users") 
+@Table(name = "users")
 public class UserEntity implements UserDetails {
 
   @Id
@@ -43,7 +43,7 @@ public class UserEntity implements UserDetails {
   @Column(nullable = false)
   private String password; // mudar pra auth
 
-  @Column(name = "full_name", nullable = false) 
+  @Column(name = "full_name", nullable = false)
   private String fullName;
 
   @Enumerated(EnumType.STRING)
@@ -65,7 +65,7 @@ public class UserEntity implements UserDetails {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  /// coisas do spring-security
+  /// coisas do spring-securitNice y
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -80,12 +80,12 @@ public class UserEntity implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email; 
+    return email;
   }
 
   @Override
   public String getPassword() {
-    return password; 
+    return password;
   }
 
   @Override

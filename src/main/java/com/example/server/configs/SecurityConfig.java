@@ -59,7 +59,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                     .requestMatchers(HttpMethod.GET, "/courses").permitAll()
                     // Rotas exclusivas pra admin
-                    // .requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN") 
+                    .requestMatchers("/users/**").hasRole("ADMIN")
                     // Qualquer outra autenticada cai aqui
                     .anyRequest().authenticated()
             )
