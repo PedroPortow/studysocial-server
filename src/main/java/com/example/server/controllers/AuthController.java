@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +22,8 @@ import com.example.server.entities.UserEntity;
 import com.example.server.enums.RoleEnum;
 import com.example.server.repositories.CourseRepository;
 import com.example.server.repositories.UserRepository;
+import com.example.server.services.AuthService;
 import com.example.server.services.S3Service;
-import com.example.server.services.TokenService;
 
 import jakarta.validation.Valid;
 
@@ -33,10 +31,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
   @Autowired
-  private AuthenticationManager authenticationManager;
-
-  @Autowired
-  private TokenService tokenService;
+  private AuthService authService;
 
   @Autowired
   private UserRepository repository;
@@ -49,16 +44,7 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
-    var usernamePassword = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
-
-    var auth = this.authenticationManager.authenticate(usernamePassword);
-
-    UserEntity user = (UserEntity) auth.getPrincipal();
-    var token = tokenService.generateToken(user);
-
-    var loginData = new LoginResponseDto(token, UserResponseDto.fromEntity(user));
-
-    return ResponseEntity.ok(loginData);
+    return ResponseEntity.ok(authService.login(loginDto));
   }
 
   @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -84,7 +70,7 @@ public class AuthController {
     }
 
     String hashPassword = new BCryptPasswordEncoder().encode(password);
-    
+
     UserEntity newUser = UserEntity.builder()
       .email(email)
       .password(hashPassword)
