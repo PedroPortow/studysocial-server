@@ -1,5 +1,6 @@
 package com.example.server.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,16 +26,13 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "notes")
-@Table(name = "notes")
-public class NoteEntity {
+@Entity(name = "assessments")
+@Table(name = "assessments")
+public class AssessmentEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "subject_id", nullable = false)
@@ -43,8 +41,11 @@ public class NoteEntity {
   @Column(nullable = false, length = 120)
   private String title;
 
-  @Column(columnDefinition = "TEXT")
-  private String content;
+  @Column(nullable = false, precision = 4, scale = 2)
+  private BigDecimal value;
+
+  @Column(nullable = false, precision = 4, scale = 2)
+  private BigDecimal weight;
 
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)

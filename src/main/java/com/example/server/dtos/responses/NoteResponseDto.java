@@ -15,6 +15,9 @@ public record NoteResponseDto(
     @JsonProperty("subject_id")
     Long subjectId,
 
+    @JsonProperty("subject_name")
+    String subjectName,
+
     @JsonProperty("created_at")
     LocalDateTime createdAt,
 
@@ -28,7 +31,8 @@ public record NoteResponseDto(
             note.getId(),
             note.getTitle(),
             note.getContent(),
-            note.getSubjectId(),
+            note.getSubject().getId(),
+            note.getSubject().getName(),
             note.getCreatedAt(),
             note.getUpdatedAt(),
             UserResponseDto.fromEntity(note.getUser())

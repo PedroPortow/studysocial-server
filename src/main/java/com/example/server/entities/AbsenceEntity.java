@@ -1,5 +1,6 @@
 package com.example.server.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,26 +26,26 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "notes")
-@Table(name = "notes")
-public class NoteEntity {
+@Entity(name = "absences")
+@Table(name = "absences")
+public class AbsenceEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
-
-  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "subject_id", nullable = false)
   private SubjectEntity subject;
 
-  @Column(nullable = false, length = 120)
-  private String title;
+  @Column(nullable = false)
+  private Integer quantity;
 
-  @Column(columnDefinition = "TEXT")
-  private String content;
+  @Column(nullable = false)
+  private LocalDate date;
+
+  @Column(length = 80)
+  private String reason;
 
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)

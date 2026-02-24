@@ -25,9 +25,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "notes")
-@Table(name = "notes")
-public class NoteEntity {
+@Entity(name = "subjects")
+@Table(name = "subjects")
+public class SubjectEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -36,15 +37,8 @@ public class NoteEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "subject_id", nullable = false)
-  private SubjectEntity subject;
-
-  @Column(nullable = false, length = 120)
-  private String title;
-
-  @Column(columnDefinition = "TEXT")
-  private String content;
+  @Column(nullable = false, length = 80)
+  private String name;
 
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)

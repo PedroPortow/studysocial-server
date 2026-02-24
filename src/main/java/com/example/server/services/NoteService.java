@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.server.dtos.requests.CreateNoteDto;
 import com.example.server.dtos.requests.UpdateNoteDto;
 import com.example.server.entities.NoteEntity;
+import com.example.server.entities.SubjectEntity;
 import com.example.server.entities.UserEntity;
 import com.example.server.enums.RoleEnum;
 import com.example.server.repositories.NoteRepository;
@@ -15,9 +16,11 @@ import com.example.server.repositories.NoteRepository;
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final SubjectService subjectService;
 
-    NoteService(NoteRepository noteRepository) {
+    NoteService(NoteRepository noteRepository, SubjectService subjectService) {
         this.noteRepository = noteRepository;
+        this.subjectService = subjectService;
     }
 
     public List<NoteEntity> findByUser(UserEntity user) {
@@ -25,19 +28,23 @@ public class NoteService {
     }
 
     public List<NoteEntity> findByUserAndSubject(UserEntity user, Long subjectId) {
-        return noteRepository.findByUserAndSubjectIdOrderByCreatedAtDesc(user, subjectId);
+        SubjectEntity subject = subjectService.findById(subjectId);
+        return noteRepository.findByUserAndSubjectOrderByCreatedAtDesc(user, subject);
     }
 
     public NoteEntity findById(Long id) {
         return noteRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Anotação não encontrada whooooopss"));
+            .orElseThrow(() -> new RuntimeException("Note not found"));
     }
 
     public NoteEntity create(CreateNoteDto dto, UserEntity user) {
+        SubjectEntity subject = subjectService.findById(dto.subjectId());
+        subjectService.verifyOwnership(subject, user);
+
         NoteEntity note = NoteEntity.builder()
             .title(dto.title())
             .content(dto.content())
-            .subjectId(dto.subjectId())
+            .subject(subject)
             .user(user)
             .build();
 
@@ -48,7 +55,7 @@ public class NoteService {
         NoteEntity note = findById(id);
 
         if (!note.getUser().getEmail().equals(user.getEmail()) && user.getRole() != RoleEnum.ADMIN) {
-            throw new RuntimeException("no tienes permission :( ");
+            throw new RuntimeException("You don't have permission to edit this note");
         }
 
         if (dto.title() != null) {
@@ -65,7 +72,7 @@ public class NoteService {
         NoteEntity note = findById(id);
 
         if (!note.getUser().getEmail().equals(user.getEmail()) && user.getRole() != RoleEnum.ADMIN) {
-            throw new RuntimeException("no tienes permission :((( ");
+            throw new RuntimeException("You don't have permission to delete this note");
         }
 
         noteRepository.delete(note);
