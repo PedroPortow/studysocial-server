@@ -65,7 +65,7 @@ public class NoteService {
         NoteEntity note = findById(id);
 
         if (!note.getUser().getEmail().equals(user.getEmail()) && user.getRole() != RoleEnum.ADMIN) {
-            throw new RuntimeException("no tienes permission :((( ";
+            throw new RuntimeException("no tienes permission :((( ");
         }
 
         noteRepository.delete(note);
