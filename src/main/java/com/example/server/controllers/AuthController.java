@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.server.dtos.LoginDto;
+import com.example.server.dtos.requests.ForgotPasswordDto;
 import com.example.server.dtos.requests.RegisterDto;
+import com.example.server.dtos.requests.ResetPasswordDto;
 import com.example.server.dtos.responses.LoginResponseDto;
 import com.example.server.dtos.responses.UserResponseDto;
 import com.example.server.services.AuthService;
@@ -48,5 +50,17 @@ public class AuthController {
   @GetMapping("/me")
   public ResponseEntity<UserResponseDto> me() {
     return ResponseEntity.ok(authService.me());
+  }
+
+  @PostMapping("/forgot-password")
+  public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordDto dto) {
+    authService.forgotPassword(dto);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/reset-password")
+  public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordDto dto) {
+    authService.resetPassword(dto);
+    return ResponseEntity.ok().build();
   }
 }

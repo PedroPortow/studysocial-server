@@ -52,6 +52,8 @@ public class SecurityConfig {
                     // Rotas públicas
                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/forgot-password").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/reset-password").permitAll()
                     .requestMatchers(HttpMethod.GET, "/courses").permitAll()
                     // Rotas exclusivas pra admin
                     .requestMatchers("/users/**").hasRole("ADMIN")
